@@ -1,3 +1,8 @@
+# 0.1.1 - 2026-01-29
+
+Fixes
+- Fix GitHub Actions release matrix targets (remove stray trailing commas) so macOS builds resolve the correct Rust target.
+
 # 0.1.0 - 2026-01-29
 
 We're excited to ship the very first release of diff-coverage, a developer‑focused CLI that makes coverage on changed code 
