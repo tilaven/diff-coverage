@@ -1,8 +1,13 @@
+# 0.1.4 - 2026-01-30
+
+Added
+- Add auto publishing to crates.io
+
 # 0.1.2 - 2026-01-29
 
 Fixes
 - Fix GitHub Actions release matrix targets - install Cross
-`- `
+
 # 0.1.1 - 2026-01-29
 
 Fixes
