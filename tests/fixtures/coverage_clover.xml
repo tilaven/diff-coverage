@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1769263192">
+  <project timestamp="1769263192" name="Clover Coverage">
+    <package name="AppExample">
+      <file name="/Users/user/PhpstormProjects/untitled2/src/Calculator.php">
+        <class name="AppExample\Calculator" namespace="AppExample">
+          <metrics complexity="2" methods="2" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="2" coveredstatements="1" elements="4" coveredelements="2"/>
+        </class>
+        <line num="9" type="method" name="sub" visibility="public" complexity="1" crap="1" count="1"/>
+        <line num="11" type="stmt" count="1"/>
+        <line num="14" type="method" name="add" visibility="public" complexity="1" crap="2" count="0"/>
+        <line num="16" type="stmt" count="0"/>
+        <metrics loc="18" ncloc="18" classes="1" methods="2" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="2" coveredstatements="1" elements="4" coveredelements="2"/>
+      </file>
+    </package>
+    <metrics files="1" loc="18" ncloc="18" classes="1" methods="2" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="2" coveredstatements="1" elements="4" coveredelements="2"/>
+  </project>
+</coverage>

@@ -1,0 +1,36 @@
+diff --git a/src/Calculator.php b/src/Calculator.php
+index 322e829..ea6d5f4 100644
+--- a/src/Calculator.php
++++ b/src/Calculator.php
+@@ -6,13 +6,13 @@ namespace AppExample;
+ 
+ class Calculator
+ {
+-    public function add(int $a, int $b): int
++    public function sub(int $a, int $b): int
+     {
+-        return $a + $b;
++        return $a - $b;
+     }
+ 
+-    public function sub(int $a, int $b): int
++    public function add(int $a, int $b): int
+     {
+-        return $a - $b;
++        return $a + $b;
+     }
+ }
+\ No newline at end of file
+diff --git a/tests/CalculatorTest.php b/tests/CalculatorTest.php
+index 82a9711..3371909 100644
+--- a/tests/CalculatorTest.php
++++ b/tests/CalculatorTest.php
+@@ -12,6 +12,6 @@ class CalculatorTest extends TestCase
+     public function test_add(): void
+     {
+         $calculator = new Calculator();
+-        $this->assertEquals(4, $calculator->add(2, 2));
++        $this->assertEquals(0, $calculator->sub(2, 2));
+     }
+ }
+\ No newline at end of file

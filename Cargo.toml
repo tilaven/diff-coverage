@@ -1,0 +1,17 @@
+[package]
+name = "diff-coverage"
+version = "0.1.0"
+edition = "2021"
+description = "Diff-coverage, supercharged in Rust. Fast, memory-efficient coverage on changed lines for CI."
+license = "MIT"
+repository = "https://github.com/tilaven/diff-coverage"
+readme = "README.md"
+keywords = ["coverage", "diff", "ci", "testing", "rust"]
+categories = ["development-tools::testing", "command-line-utilities"]
+
+[dependencies]
+clap = { version = "4.5.7", features = ["derive"] }
+owo-colors = "4.0.0"
+quick-xml = "0.37.0"
+serde = { version = "1.0.210", features = ["derive"] }
+serde_json = "1.0.128"
