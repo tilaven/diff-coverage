@@ -7,20 +7,20 @@ fast, reliable feedback you can trust.
 ## Usage
 
 ```shell
-diff-cover coverage.xml --diff-file diff.diff
+diff-coverage coverage.xml --diff-file diff.diff
 
 # Multiple coverage inputs (repeat or comma‑separated)
-diff-cover coverage1.xml coverage2.xml --diff-file diff.diff
+diff-coverage coverage1.xml coverage2.xml --diff-file diff.diff
 
 # Multiple coverage inputs in a directory
-diff-cover ./coverage/ --diff-file diff.diff
+diff-coverage ./coverage/ --diff-file diff.diff
 
 # Fail the build if diff coverage drops below a threshold
-diff-cover ./coverage/ coverage.xml --diff-file diff.diff --fail-under 80
+diff-coverage ./coverage/ coverage.xml --diff-file diff.diff --fail-under 80
 
 # Output to CI formats
-diff-cover coverage.xml --diff-file diff.diff --output gitlab=diff-cover.json
-diff-cover coverage.xml --diff-file diff.diff --output json=diff-cover.json --output summary
+diff-coverage coverage.xml --diff-file diff.diff --output gitlab=diff-cover.json
+diff-coverage coverage.xml --diff-file diff.diff --output json=diff-cover.json --output summary
 ```
 
 Options

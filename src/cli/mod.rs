@@ -76,7 +76,7 @@ pub struct OutputTarget {
 
 #[derive(Debug, Parser)]
 #[command(
-    name = "diff-cover",
+    name = "diff-coverage",
     version,
     about = "Scan diffs for coverage changes.",
     arg_required_else_help = true
