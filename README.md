@@ -54,6 +54,18 @@ Options
 *Peak RSS shown in MB (kB ÷ 1024).*  
 [Full benchmark results](coverage-download/diff_cover_benchmark_comparison.md)
 
+## Installation
+
+### Prebuilt binaries
+
+Download the prebuilt archives from the [GitHub Releases page](https://github.com/tilaven/diff-coverage/releases). 
+
+### Cargo install
+
+```bash
+cargo install diff-coverage
+```
+
 ## Build
 
 ```bash
