@@ -1,3 +1,8 @@
+# 0.1.2 - 2026-01-29
+
+Fixes
+- Fix GitHub Actions release matrix targets - install Cross
+`- `
 # 0.1.1 - 2026-01-29
 
 Fixes
