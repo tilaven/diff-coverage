@@ -1,82 +1,124 @@
-diff --git a/composer.json b/composer.json
-index c54e942..522a38b 100644
---- a/composer.json
-+++ b/composer.json
-@@ -5,7 +5,8 @@
-   },
-   "autoload": {
-     "psr-4": {
--      "DiffCover\\": "src/"
-+      "DiffCover\\": "src/",
-+      "DiffCover2\\": "lib/"
-     }
-   },
-   "autoload-dev": {
+diff --git a/diff.text b/diff.text
+index bcba3e3..e69de29 100644
+--- a/diff.text
++++ b/diff.text
+@@ -1,82 +0,0 @@
+-diff --git a/composer.json b/composer.json
+-index c54e942..522a38b 100644
+---- a/composer.json
+-+++ b/composer.json
+-@@ -5,7 +5,8 @@
+-   },
+-   "autoload": {
+-     "psr-4": {
+--      "DiffCover\\": "src/"
+-+      "DiffCover\\": "src/",
+-+      "DiffCover2\\": "lib/"
+-     }
+-   },
+-   "autoload-dev": {
+-diff --git a/lib/Calculator.php b/lib/Calculator.php
+-index f377644..632f5d6 100644
+---- a/lib/Calculator.php
+-+++ b/lib/Calculator.php
+-@@ -1,8 +1,10 @@
+- <?php
+- 
+--namespace DiffCover;
+-+declare(strict_types=1);
+- 
+--class UncoveredCalculator
+-+namespace DiffCover2;
+-+
+-+class Calculator
+- {
+-     public function add(int $a, int $b): int
+-     {
+-diff --git a/phpunit.xml.dist b/phpunit.xml.dist
+-index 287f696..bfb8ee8 100644
+---- a/phpunit.xml.dist
+-+++ b/phpunit.xml.dist
+-@@ -29,13 +29,14 @@
+- 
+-     <testsuites>
+-         <testsuite name="Symfony Test Suite">
+--            <directory>./tests</directory>
+-+            <directory>./tests </directory>
+-         </testsuite>
+-     </testsuites>
+- 
+-     <source ignoreSuppressionOfDeprecations="true">
+-         <include>
+-             <directory>./src/</directory>
+-+            <directory>./lib/</directory>
+-         </include>
+-     </source>
+- </phpunit>
+-\ No newline at end of file
+-diff --git a/src/Calculator.php b/src/Calculator.php
+-index a922678..12b7a3d 100644
+---- a/src/Calculator.php
+-+++ b/src/Calculator.php
+-@@ -6,8 +6,8 @@ namespace DiffCover;
+- 
+- class Calculator
+- {
+--    public function add(int $a, int $b): int
+-+    public function sub(int $a, int $b): int
+-     {
+--        return $a + $b;
+-+        return $a - $b;
+-     }
+- }
+-diff --git a/tests/CalculatorTest.php b/tests/CalculatorTest.php
+-index 5f36819..68f32ef 100644
+---- a/tests/CalculatorTest.php
+-+++ b/tests/CalculatorTest.php
+-@@ -12,7 +12,7 @@ class CalculatorTest extends TestCase
+-     public function testAdd(): void
+-     {
+-         $calculator = new Calculator();
+--        $result = $calculator->add(2, 3);
+--        $this->assertEquals(5, $result);
+-+        $result = $calculator->sub(2, 3);
+-+        $this->assertEquals(-1, $result);
+-     }
+- }
+-\ No newline at end of file
 diff --git a/lib/Calculator.php b/lib/Calculator.php
-index f377644..632f5d6 100644
+index 632f5d6..0e0ed09 100644
 --- a/lib/Calculator.php
 +++ b/lib/Calculator.php
-@@ -1,8 +1,10 @@
- <?php
- 
--namespace DiffCover;
-+declare(strict_types=1);
- 
--class UncoveredCalculator
-+namespace DiffCover2;
-+
-+class Calculator
+@@ -8,6 +8,6 @@ class Calculator
  {
      public function add(int $a, int $b): int
-     {
-diff --git a/phpunit.xml.dist b/phpunit.xml.dist
-index 287f696..bfb8ee8 100644
---- a/phpunit.xml.dist
-+++ b/phpunit.xml.dist
-@@ -29,13 +29,14 @@
- 
-     <testsuites>
-         <testsuite name="Symfony Test Suite">
--            <directory>./tests</directory>
-+            <directory>./tests </directory>
-         </testsuite>
-     </testsuites>
- 
-     <source ignoreSuppressionOfDeprecations="true">
-         <include>
-             <directory>./src/</directory>
-+            <directory>./lib/</directory>
-         </include>
-     </source>
- </phpunit>
-\ No newline at end of file
-diff --git a/src/Calculator.php b/src/Calculator.php
-index a922678..12b7a3d 100644
---- a/src/Calculator.php
-+++ b/src/Calculator.php
-@@ -6,8 +6,8 @@ namespace DiffCover;
- 
- class Calculator
- {
--    public function add(int $a, int $b): int
-+    public function sub(int $a, int $b): int
      {
 -        return $a + $b;
 +        return $a - $b;
      }
  }
+diff --git a/src/Calculator.php b/src/Calculator.php
+index 12b7a3d..73ad575 100644
+--- a/src/Calculator.php
++++ b/src/Calculator.php
+@@ -8,6 +8,6 @@ class Calculator
+ {
+     public function sub(int $a, int $b): int
+     {
+-        return $a - $b;
++        return $a + $b;
+     }
+ }
 diff --git a/tests/CalculatorTest.php b/tests/CalculatorTest.php
-index 5f36819..68f32ef 100644
+index 68f32ef..9ae0b56 100644
 --- a/tests/CalculatorTest.php
 +++ b/tests/CalculatorTest.php
-@@ -12,7 +12,7 @@ class CalculatorTest extends TestCase
-     public function testAdd(): void
+@@ -13,6 +13,6 @@ class CalculatorTest extends TestCase
      {
          $calculator = new Calculator();
--        $result = $calculator->add(2, 3);
--        $this->assertEquals(5, $result);
-+        $result = $calculator->sub(2, 3);
-+        $this->assertEquals(-1, $result);
+         $result = $calculator->sub(2, 3);
+-        $this->assertEquals(-1, $result);
++        $this->assertEquals(5, $result);
      }
  }
 \ No newline at end of file
