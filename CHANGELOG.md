@@ -1,3 +1,8 @@
+# 0.1.5 - 2026-01-30
+
+Fixed
+- Fix coverage of files with the same name in different directories
+
 # 0.1.4 - 2026-01-30
 
 Added
