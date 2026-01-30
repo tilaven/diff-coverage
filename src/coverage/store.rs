@@ -63,12 +63,20 @@ impl CoverageStore {
             0 => Ok(None),
             1 => Ok(self.coverage_for(matches[0]).map(Some).unwrap_or(None)),
             _ => {
-                let mut resolved = matches.into_iter().cloned().collect::<Vec<_>>();
-                resolved.sort_unstable();
-                Err(CoverageLookupError {
-                    path: path.to_string(),
-                    matches: resolved,
-                })
+                let mut merged = FileCoverage::default();
+                for key in matches {
+                    if let Some(coverage) = self.coverage_for(key) {
+                        merged
+                            .measured_lines
+                            .extend(coverage.measured_lines.iter().copied());
+                        merged
+                            .covered_lines
+                            .extend(coverage.covered_lines.iter().copied());
+                    }
+                }
+                merged.dirty = true;
+                merged.normalize_in_place();
+                Ok(Some(Cow::Owned(merged)))
             }
         }
     }
@@ -141,27 +149,27 @@ fn sort_and_dedup(values: &mut Vec<u32>) {
 
 #[cfg(test)]
 mod tests {
-    use super::{CoverageLookupError, CoverageStore, FileCoverage};
+    use super::{CoverageStore, FileCoverage};
     use crate::coverage::CoverageSink;
 
     #[test]
-    fn reports_ambiguous_path_matches() {
+    fn merges_ambiguous_path_matches() {
         let mut store = CoverageStore::default();
         store.on_line("src/foo.rs", 12, 0);
         store.on_line("src/foo.rs", 10, 2);
         store.on_line("lib/foo.rs", 14, 1);
         store.on_line("lib/foo.rs", 12, 1);
 
-        let err = store
+        let merged = store
             .file_coverage("foo.rs")
-            .expect_err("ambiguous coverage");
-        assert_eq!(
-            err,
-            CoverageLookupError {
-                path: "foo.rs".to_string(),
-                matches: vec!["lib/foo.rs".to_string(), "src/foo.rs".to_string()],
-            }
-        );
+            .expect("lookup")
+            .expect("merged coverage");
+        assert!(merged.is_measured(10));
+        assert!(merged.is_measured(12));
+        assert!(merged.is_measured(14));
+        assert!(merged.is_covered(10));
+        assert!(merged.is_covered(12));
+        assert!(merged.is_covered(14));
     }
 
     #[test]
