@@ -35,6 +35,9 @@ Options
 
 ### Benchmark 1
 
+- Git diff file: 40MB size and 1,808,684 lines long
+- Coverage file: 46MB size and 1,115,971 lines long
+
 | Metric | Rust | Python | Improvement (Python / Rust) |
 |---|---:|---:|---:|
 | Mean wall time | 2.47s | 108.23s | 43.90× |
@@ -44,6 +47,9 @@ Options
 
 ### Benchmark 2
 
+- Git diff file: 40MB size and 1,808,684 lines long
+- 50 coverage files: each 620KB size and 24,116 lines long
+
 | Metric | Rust | Python | Improvement (Python / Rust) |
 |---|---:|---:|---:|
 | Mean wall time | 2.10s | 227.24s | 108.24× |
@@ -52,7 +58,7 @@ Options
 | Max peak RSS | 22.84 MB | 494.64 MB | 21.65× |
 
 *Peak RSS shown in MB (kB ÷ 1024).*  
-[Full benchmark results](coverage-download/diff_cover_benchmark_comparison.md)
+[Full benchmark results](docs/benchmark_results.md)
 
 ## Installation
 
@@ -64,6 +70,13 @@ Download the prebuilt archives from the [GitHub Releases page](https://github.co
 
 ```bash
 cargo install diff-coverage
+```
+
+### Docker
+
+```bash
+docker run --rm -v "$PWD":/work -w /work <dockerhub-user>/diff-coverage:latest \
+  coverage.xml --diff-file diff.diff
 ```
 
 ## Build

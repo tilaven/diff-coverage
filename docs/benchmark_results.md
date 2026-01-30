@@ -7,6 +7,8 @@ Parsed GNU time output from .log files under `coverage-download/`. Percentiles u
 ## Benchmark 1
 - Python logs: 100 files
 - Rust logs: 106 files
+- Git diff file: 40MB size and 1,808,684 lines long
+- Coverage file: 46MB size and 1,115,971 lines long
 
 #### Elapsed wall time (seconds)
 | Stat | Python | Rust |
@@ -91,6 +93,8 @@ Parsed GNU time output from .log files under `coverage-download/`. Percentiles u
 ## Benchmark 2
 - Python logs: 101 files
 - Rust logs: 100 files
+- Git diff file: 40MB size and 1,808,684 lines long
+- 50 coverage files: each 620KB size and 24,116 lines long
 
 #### Elapsed wall time (seconds)
 | Stat | Python | Rust |
