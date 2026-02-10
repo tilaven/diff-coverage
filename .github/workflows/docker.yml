@@ -15,8 +15,8 @@ jobs:
       contents: read
       packages: write
     env:
-      IMAGE: ${{ github.repository_owner }}/diff-coverage-internal
-      GHCR_IMAGE: ghcr.io/${{ github.repository_owner }}/diff-coverage-internal
+      IMAGE: ${{ github.repository_owner }}/diff-coverage
+      GHCR_IMAGE: ghcr.io/${{ github.repository_owner }}/diff-coverage
     strategy:
       matrix:
         include:
