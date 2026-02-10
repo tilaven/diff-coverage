@@ -1,10 +1,19 @@
 # syntax=docker/dockerfile:1.6
 ARG ALPINE_VERSION=3.20
-ARG TARGETARCH
+ARG BUILDPLATFORM
+ARG TARGETPLATFORM
 
 FROM alpine:${ALPINE_VERSION}
-ARG TARGETARCH
-ENV TARGETARCH=$TARGETARCH
+ARG TARGETPLATFORM
 RUN apk add --no-cache ca-certificates
-COPY dist/diff-coverage-${TARGETARCH} /usr/local/bin/diff-coverage
+COPY dist/ /dist/
+RUN set -eux; \
+  case "$TARGETPLATFORM" in \
+    "linux/amd64") BIN="diff-coverage-amd64" ;; \
+    "linux/arm64") BIN="diff-coverage-arm64" ;; \
+    *) echo "Unsupported TARGETPLATFORM=$TARGETPLATFORM"; exit 1 ;; \
+  esac; \
+  mv "/dist/$BIN" /usr/local/bin/diff-coverage; \
+  chmod +x /usr/local/bin/diff-coverage; \
+  rm -rf /dist
 ENTRYPOINT ["diff-coverage"]
