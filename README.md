@@ -1,7 +1,7 @@
 # ⚡🧠️ diff-coverage
 
-Diff-cover, supercharged in Rust 🦀. Get instant, actionable coverage insights at ⚡ blazing speed ⚡ with 
-a 🧠️ tiny memory footprint 🧠️. Built for modern CI and massive repos, it turns slow coverage checks into 
+Diff-cover, supercharged in Rust 🦀. Get instant, actionable coverage insights at ⚡ blazing speed ⚡ with
+a 🧠️ tiny memory footprint 🧠️. Built for modern CI and massive repos, it turns slow coverage checks into
 fast, reliable feedback you can trust.
 
 ## Usage
@@ -64,7 +64,7 @@ Options
 
 ### Prebuilt binaries
 
-Download the prebuilt archives from the [GitHub Releases page](https://github.com/tilaven/diff-coverage/releases). 
+Download the prebuilt archives from the [GitHub Releases page](https://github.com/tilaven/diff-coverage/releases).
 
 ### Cargo install
 
@@ -75,7 +75,14 @@ cargo install diff-coverage
 ### Docker
 
 ```bash
-docker run --rm -v "$PWD":/work -w /work <dockerhub-user>/diff-coverage:latest \
+docker run --rm -v "$PWD":/work -w /work tilaven/diff-coverage:<version>-alpine \
+  coverage.xml --diff-file diff.diff
+```
+
+Debian-based image (e.g. trixie) is available via versioned tags:
+
+```bash
+docker run --rm -v "$PWD":/work -w /work tilaven/diff-coverage:<version>-debian-trixie \
   coverage.xml --diff-file diff.diff
 ```
 
@@ -85,7 +92,7 @@ docker run --rm -v "$PWD":/work -w /work <dockerhub-user>/diff-coverage:latest \
 cargo build
 ```
 
-## Run 
+## Run
 
 ```bash
 cargo run

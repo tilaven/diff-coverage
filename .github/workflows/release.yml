@@ -74,13 +74,16 @@ jobs:
         if: "!startsWith(matrix.os, 'ubuntu')"
         run: cargo build --release --locked --target ${{ matrix.target }}
 
-      - name: Prepare release binary
+      - name: Prepare release archive
         id: prepare
         shell: bash
         run: |
           mkdir -p dist
-          asset="diff-coverage-${{ github.ref_name }}-${{ matrix.target }}${{ matrix.bin_ext }}"
-          cp "target/${{ matrix.target }}/release/diff-coverage${{ matrix.bin_ext }}" "dist/$asset"
+          binary="diff-coverage${{ matrix.bin_ext }}"
+          asset="diff-coverage-${{ github.ref_name }}-${{ matrix.target }}.tar.gz"
+          cp "target/${{ matrix.target }}/release/$binary" "dist/$binary"
+          tar -C dist -czf "dist/$asset" "$binary"
+          rm "dist/$binary"
           echo "asset=dist/$asset" >> "$GITHUB_OUTPUT"
 
       - name: Upload release assets
@@ -88,6 +91,20 @@ jobs:
         with:
           files: |
             ${{ steps.prepare.outputs.asset }}
+
+  dispatch-docker:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Trigger docker workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ github.ref_name }}"
+          gh workflow run docker.yml -R "$GITHUB_REPOSITORY" --ref "$TAG" -f tag="$TAG"
 
   publish:
     runs-on: ubuntu-latest

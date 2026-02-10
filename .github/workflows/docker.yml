@@ -1,9 +1,6 @@
 name: docker
 
 on:
-  push:
-    tags:
-      - "v*"
   workflow_dispatch:
     inputs:
       tag:
@@ -16,67 +13,70 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: write
     env:
-      IMAGE: ${{ github.repository_owner }}/diff-coverage
-      ALPINE_VERSION: "3.20"
+      IMAGE: ${{ github.repository_owner }}/diff-coverage-internal
+      GHCR_IMAGE: ghcr.io/${{ github.repository_owner }}/diff-coverage-internal
+    strategy:
+      matrix:
+        include:
+          - variant: alpine
+            base_image: alpine:3.20
+            rust_target_suffix: musl
+            tag_suffix: alpine-3.20
+          - variant: debian
+            base_image: debian:trixie
+            rust_target_suffix: gnu
+            tag_suffix: debian-trixie
     steps:
       - uses: actions/checkout@v4
-      - name: Set version
+        with:
+          fetch-depth: 0
+      - name: Set version (manual)
+        if: github.event_name == 'workflow_dispatch'
         run: |
           TAG="${{ inputs.tag }}"
-          if [ -z "$TAG" ]; then TAG="$GITHUB_REF_NAME"; fi
+          if [ -z "$TAG" ]; then
+            echo "Release tag input is required" >&2
+            exit 1
+          fi
           VERSION="${TAG#v}"
           echo "TAG=$TAG" >> "$GITHUB_ENV"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
-      - name: Wait for release binaries
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          for i in {1..60}; do
-            assets="$(gh release view "$TAG" --json assets --jq '.assets[].name' || true)"
-            if echo "$assets" | grep -q "diff-coverage-$TAG-x86_64-unknown-linux-musl" \
-              && echo "$assets" | grep -q "diff-coverage-$TAG-aarch64-unknown-linux-musl"; then
-              exit 0
-            fi
-            echo "Waiting for release assets for $TAG..."
-            sleep 10
-          done
-          echo "Release assets not found for $TAG"
-          exit 1
       - name: Download release binaries
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p dist
-          gh release download "$TAG" --pattern "diff-coverage-$TAG-x86_64-unknown-linux-musl" --dir dist
-          gh release download "$TAG" --pattern "diff-coverage-$TAG-aarch64-unknown-linux-musl" --dir dist
-          mv "dist/diff-coverage-$TAG-x86_64-unknown-linux-musl" "dist/diff-coverage-x86_64-unknown-linux-musl"
-          mv "dist/diff-coverage-$TAG-aarch64-unknown-linux-musl" "dist/diff-coverage-aarch64-unknown-linux-musl"
-          chmod +x dist/diff-coverage-x86_64-unknown-linux-musl dist/diff-coverage-aarch64-unknown-linux-musl
+          gh release download "$TAG" --pattern "diff-coverage-$TAG-x86_64-unknown-linux-${{ matrix.rust_target_suffix }}.tar.gz" --dir dist
+          gh release download "$TAG" --pattern "diff-coverage-$TAG-aarch64-unknown-linux-${{ matrix.rust_target_suffix }}.tar.gz" --dir dist
+          tar -xzf "dist/diff-coverage-$TAG-x86_64-unknown-linux-${{ matrix.rust_target_suffix }}.tar.gz" -C dist
+          mv "dist/diff-coverage" "dist/diff-coverage-x86_64-unknown-linux-${{ matrix.rust_target_suffix }}"
+          tar -xzf "dist/diff-coverage-$TAG-aarch64-unknown-linux-${{ matrix.rust_target_suffix }}.tar.gz" -C dist
+          mv "dist/diff-coverage" "dist/diff-coverage-aarch64-unknown-linux-${{ matrix.rust_target_suffix }}"
+          rm -f dist/*.tar.gz
+          chmod +x dist/diff-coverage-x86_64-unknown-linux-${{ matrix.rust_target_suffix }} dist/diff-coverage-aarch64-unknown-linux-${{ matrix.rust_target_suffix }}
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.IMAGE }}
+          images: |
+            ${{ env.IMAGE }}
+            ${{ env.GHCR_IMAGE }}
           tags: |
-            type=raw,value=latest
-            type=semver,pattern={{version}},value=${{ env.VERSION }}
-            type=semver,pattern={{major}},value=${{ env.VERSION }}
-            type=semver,pattern={{major}}.{{minor}},value=${{ env.VERSION }}
-            type=raw,value=alpine
-            type=raw,value=alpine-${{ env.ALPINE_VERSION }}
-            type=semver,pattern={{version}},value=${{ env.VERSION }},suffix=-alpine
-            type=semver,pattern={{major}},value=${{ env.VERSION }},suffix=-alpine
-            type=semver,pattern={{major}}.{{minor}},value=${{ env.VERSION }},suffix=-alpine
-            type=semver,pattern={{version}},value=${{ env.VERSION }},suffix=-alpine-${{ env.ALPINE_VERSION }}
-            type=semver,pattern={{major}},value=${{ env.VERSION }},suffix=-alpine-${{ env.ALPINE_VERSION }}
-            type=semver,pattern={{major}}.{{minor}},value=${{ env.VERSION }},suffix=-alpine-${{ env.ALPINE_VERSION }}
+            type=semver,pattern={{version}},value=${{ env.VERSION }},suffix=-${{ matrix.tag_suffix }}
+            type=semver,pattern={{major}},value=${{ env.VERSION }},suffix=-${{ matrix.tag_suffix }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ env.VERSION }},suffix=-${{ matrix.tag_suffix }}
       - name: Build and push (linux)
         uses: docker/build-push-action@v5
         with:
@@ -85,6 +85,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           build-args: |
-            ALPINE_VERSION=${{ env.ALPINE_VERSION }}
+            BASE_IMAGE=${{ matrix.base_image }}
+            RUST_TARGET_SUFFIX=${{ matrix.rust_target_suffix }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
