@@ -7,13 +7,15 @@ FROM alpine:${ALPINE_VERSION}
 ARG TARGETPLATFORM
 RUN apk add --no-cache ca-certificates
 COPY dist/ /dist/
-RUN set -eux; \
-  case "$TARGETPLATFORM" in \
-    "linux/amd64") BIN="diff-coverage-amd64" ;; \
-    "linux/arm64") BIN="diff-coverage-arm64" ;; \
-    *) echo "Unsupported TARGETPLATFORM=$TARGETPLATFORM"; exit 1 ;; \
-  esac; \
-  mv "/dist/$BIN" /usr/local/bin/diff-coverage; \
+ARG TARGETPLATFORM
+RUN case "$TARGETPLATFORM" in \
+  "linux/arm64") echo "aarch64-unknown-linux-musl" > rust_target.txt ;; \
+  "linux/amd64") echo "x86_64-unknown-linux-musl" > rust_target.txt ;; \
+  *) exit 1 ;; \
+  esac
+
+RUN 
+  mv "/dist/diff-coverage-$(cat rust_target.txt)" /usr/local/bin/diff-coverage; \
   chmod +x /usr/local/bin/diff-coverage; \
-  rm -rf /dist
+  rm -rf /dist rust_target.txt
 ENTRYPOINT ["diff-coverage"]
