@@ -1,7 +1,9 @@
-# 0.2.0 - 2027-02-10
+# 0.2.1 - 2026-02-10
 
 Added
 - Dockerhub release 
+
+# 0.2.0 - 2026-02-10
 
 Changed
 - Output binaries in releases instead of archives with README
