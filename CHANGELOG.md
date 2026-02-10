@@ -1,3 +1,14 @@
+# 0.3.1 - 2026-02-11
+
+Fixed
+- Fix Docker releases
+
+# 0.3.0 - 2026-02-11
+
+Changed
+- Output binaries as archives in releases
+- Dockerhub AND GHCR release
+
 # 0.2.1 - 2026-02-10
 
 Added
