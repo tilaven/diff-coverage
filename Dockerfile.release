@@ -4,6 +4,7 @@ ARG TARGETARCH
 
 FROM alpine:${ALPINE_VERSION}
 ARG TARGETARCH
+ENV TARGETARCH=$TARGETARCH
 RUN apk add --no-cache ca-certificates
 COPY dist/diff-coverage-${TARGETARCH} /usr/local/bin/diff-coverage
 ENTRYPOINT ["diff-coverage"]
