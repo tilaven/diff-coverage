@@ -26,26 +26,35 @@ jobs:
           ## macOS: aarch64, x86_64
           - target: aarch64-apple-darwin
             os: macos-latest
+            bin_ext: ""
           - target: x86_64-apple-darwin
             os: macos-latest
+            bin_ext: ""
           ## Linux:
           ## Linux: aarch64, x86_64
           - target: aarch64-unknown-linux-gnu
             os: ubuntu-latest
+            bin_ext: ""
           - target: aarch64-unknown-linux-musl
             os: ubuntu-latest
+            bin_ext: ""
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
+            bin_ext: ""
           - target: x86_64-unknown-linux-musl
             os: ubuntu-latest
+            bin_ext: ""
           ## Windows: x86_64
           - target: x86_64-pc-windows-msvc
             os: windows-latest
+            bin_ext: ".exe"
           - target: x86_64-pc-windows-gnu
             os: windows-latest
+            bin_ext: ".exe"
           # FreeBSD: x86_64
           - target: x86_64-unknown-freebsd
             os: ubuntu-latest
+            bin_ext: ""
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -65,34 +74,20 @@ jobs:
         if: "!startsWith(matrix.os, 'ubuntu')"
         run: cargo build --release --locked --target ${{ matrix.target }}
 
-      - name: Prepare dist
+      - name: Prepare release binary
+        id: prepare
         shell: bash
         run: |
           mkdir -p dist
-          cp "target/${{ matrix.target }}/release/diff-coverage" dist/
-          cp README.md dist/
-
-      - name: Package (tar.gz)
-        if: runner.os != 'Windows'
-        shell: bash
-        run: |
-          archive="diff-coverage-${{ github.ref_name }}-${{ matrix.target }}.tar.gz"
-          tar -czf "$archive" -C dist .
-          echo "archive=$archive" >> "$GITHUB_OUTPUT"
-
-      - name: Package (zip)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $archive = "diff-coverage-${{ github.ref_name }}-${{ matrix.target }}.zip"
-          Compress-Archive -Path dist\* -DestinationPath $archive
-          "archive=$archive" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          asset="diff-coverage-${{ github.ref_name }}-${{ matrix.target }}${{ matrix.bin_ext }}"
+          cp "target/${{ matrix.target }}/release/diff-coverage${{ matrix.bin_ext }}" "dist/$asset"
+          echo "asset=dist/$asset" >> "$GITHUB_OUTPUT"
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            diff-coverage-${{ github.ref_name }}-${{ matrix.target }}.*
+            ${{ steps.prepare.outputs.asset }}
 
   publish:
     runs-on: ubuntu-latest
