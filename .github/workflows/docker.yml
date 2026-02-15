@@ -24,6 +24,10 @@ jobs:
             base_image: alpine:3.20
             rust_target_suffix: musl
             tag_suffix: alpine-3.20
+          - variant: scratch
+            base_image: scratch
+            rust_target_suffix: musl
+            tag_suffix: scratch
           - variant: debian
             base_image: debian:trixie
             rust_target_suffix: gnu

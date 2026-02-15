@@ -86,6 +86,13 @@ docker run --rm -v "$PWD":/work -w /work tilaven/diff-coverage:<version>-debian-
   coverage.xml --diff-file diff.diff
 ```
 
+Minimal scratch image is available via versioned tags:
+
+```bash
+docker run --rm -v "$PWD":/work -w /work tilaven/diff-coverage:<version>-scratch \
+  coverage.xml --diff-file diff.diff
+```
+
 ## Build
 
 ```bash
