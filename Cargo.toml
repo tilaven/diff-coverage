@@ -1,6 +1,6 @@
 [package]
 name = "diff-coverage"
-version = "0.5.0"
+version = "0.6.1"
 edition = "2021"
 description = "Diff-coverage, supercharged in Rust. Fast, memory-efficient coverage on changed lines for CI."
 license = "MIT"
