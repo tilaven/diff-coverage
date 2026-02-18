@@ -2,6 +2,7 @@
 
 Added
 - `--skip-coverage-path` regex option to exclude matching paths from uncovered line calculations and list skipped paths in the summary output
+- cargo fmt to GitHub workflow
 
 Changed
 - CLI output lines order
