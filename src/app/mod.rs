@@ -17,6 +17,7 @@ pub fn run(options: cli::CliOptions) -> Result<(), AppError> {
     let fail_under = options.fail_under;
     let output_targets = options.outputs;
     let missing_coverage = options.missing_coverage;
+    let skip_coverage_paths = options.skip_coverage_paths;
 
     let coverage_files = collect_coverage_files(coverage_paths).map_err(AppError::usage)?;
 
@@ -39,9 +40,13 @@ pub fn run(options: cli::CliOptions) -> Result<(), AppError> {
 
             let treat_missing_as_uncovered =
                 matches!(missing_coverage, cli::MissingCoverageMode::Uncovered);
-            let report =
-                coverage::analyze_changed_coverage(&changed, &coverage, treat_missing_as_uncovered)
-                    .map_err(|err| AppError::usage(err.to_string()))?;
+            let report = coverage::analyze_changed_coverage(
+                &changed,
+                &coverage,
+                treat_missing_as_uncovered,
+                &skip_coverage_paths,
+            )
+            .map_err(|err| AppError::usage(err.to_string()))?;
             write_reports(&report, &output_plan)?;
 
             if let Some(threshold) = fail_under {

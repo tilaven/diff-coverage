@@ -21,12 +21,16 @@ diff-coverage ./coverage/ coverage.xml --diff-file diff.diff --fail-under 80
 # Output to CI formats
 diff-coverage coverage.xml --diff-file diff.diff --output gitlab=diff-cover.json
 diff-coverage coverage.xml --diff-file diff.diff --output json=diff-cover.json --output summary
+
+# Skip external packages from uncovered line calculations (regex supported)
+diff-coverage coverage.xml --diff-file diff.diff --skip-coverage-path '^pkg/mongodb'
 ```
 
 Options
 - --diff-file <PATH>: diff to analyze
 - --fail-under <PERCENT>: minimum acceptable diff coverage
 - --missing-coverage <MODE>: how to handle files missing from coverage (uncovered or ignore, default: ignore)
+- --skip-coverage-path <REGEX>: regex of file paths to skip from uncovered line calculations (repeatable or comma-separated)
 - --output <FORMAT=PATH>: output target(s), repeatable or comma‑separated Formats: cli, summary, gitlab, json (note: cli and summary don’t take a path)
 - -h, --help: show help
 - -V, --version: show version

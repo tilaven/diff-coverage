@@ -1,3 +1,26 @@
+# 0.5.0 - 2026-02-18
+
+Added
+- `--skip-coverage-path` regex option to exclude matching paths from uncovered line calculations and list skipped paths in the summary output
+
+Changed
+- CLI output lines order
+
+# 0.4.1 - 2026-02-15
+
+Fixed
+- Bump version in Cargo.toml
+
+# 0.4.0 - 2026-02-15
+
+Changed
+- Change entrypoint to cmd to simplify CI usage
+
+# 0.3.2 - 2026-02-11
+
+Fixed 
+- dockerhub release
+
 # 0.3.1 - 2026-02-11
 
 Fixed

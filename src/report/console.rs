@@ -51,6 +51,21 @@ pub fn render_to<W: Write + ?Sized>(
         }
     }
 
+    if !report.skipped_files.is_empty() {
+        writeln!(out)?;
+        let header = "Skipped paths from uncovered line calculation (matched --skip-coverage-path):";
+        if use_color {
+            writeln!(out, "{}", header.yellow().bold())?;
+        } else {
+            writeln!(out, "{header}")?;
+        }
+        for skipped in &report.skipped_files {
+            writeln!(out, "- {} (matched {})", skipped.path, skipped.pattern)?;
+        }
+    }
+
+    writeln!(out)?;
+    writeln!(out, "-------------")?;
     writeln!(out, "Coverage for changed lines: {percent_display}")?;
     out.flush()
 }
@@ -108,7 +123,8 @@ fn push_range(ranges: &mut Vec<String>, start: u32, end: u32) {
 
 #[cfg(test)]
 mod tests {
-    use super::format_line_ranges;
+    use super::{format_line_ranges, render_to};
+    use crate::report::{CoverageReport, SkippedFile};
 
     #[test]
     fn formats_line_ranges() {
@@ -116,5 +132,26 @@ mod tests {
         assert_eq!(format_line_ranges(&[1, 2, 5]), "1-2, 5");
         assert_eq!(format_line_ranges(&[1, 2, 3, 5]), "1-3, 5");
         assert_eq!(format_line_ranges(&[1, 3, 5, 6, 7, 8, 9]), "1, 3, 5-9");
+    }
+
+    #[test]
+    fn includes_skipped_paths() {
+        let report = CoverageReport {
+            total_changed: 1,
+            total_covered: 1,
+            uncovered_files: Vec::new(),
+            skipped_files: vec![SkippedFile {
+                path: "pkg/mongodb/client.go".to_string(),
+                pattern: "^pkg/mongodb".to_string(),
+            }],
+        };
+
+        let mut out = Vec::new();
+        render_to(&report, &mut out, false).expect("render");
+        let text = String::from_utf8(out).expect("utf8");
+
+        assert!(text.contains("Skipped paths"));
+        assert!(text.contains("pkg/mongodb/client.go"));
+        assert!(text.contains("^pkg/mongodb"));
     }
 }

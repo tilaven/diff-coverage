@@ -7,8 +7,9 @@ use std::io::Read;
 use std::collections::BTreeSet;
 
 use crate::diff::types::ChangedFile;
-use crate::report::{CoverageReport, UncoveredFile};
+use crate::report::{CoverageReport, SkippedFile, UncoveredFile};
 use crate::util::path::normalize_path;
+use regex::Regex;
 use store::CoverageStore;
 
 pub trait CoverageParser {
@@ -25,8 +26,10 @@ pub fn analyze_changed_coverage(
     changed_files: &[ChangedFile],
     coverage: &CoverageStore,
     treat_missing_as_uncovered: bool,
+    skip_paths: &[Regex],
 ) -> Result<CoverageReport, store::CoverageLookupError> {
     let mut uncovered_files = Vec::new();
+    let mut skipped_files = Vec::new();
     let mut total_changed = 0usize;
     let mut total_covered = 0usize;
 
@@ -34,6 +37,16 @@ pub fn analyze_changed_coverage(
         let normalized_path = normalize_path(&changed_file.path);
         let unique_lines: BTreeSet<u32> = changed_file.changed_lines.iter().copied().collect();
         if unique_lines.is_empty() {
+            continue;
+        }
+        if let Some(matched) = skip_paths
+            .iter()
+            .find(|pattern| pattern.is_match(&normalized_path))
+        {
+            skipped_files.push(SkippedFile {
+                path: normalized_path,
+                pattern: matched.as_str().to_string(),
+            });
             continue;
         }
 
@@ -77,6 +90,7 @@ pub fn analyze_changed_coverage(
         total_changed,
         total_covered,
         uncovered_files,
+        skipped_files,
     })
 }
 
@@ -86,6 +100,7 @@ mod tests {
     use crate::coverage::store::CoverageStore;
     use crate::coverage::CoverageSink;
     use crate::diff::types::ChangedFile;
+    use regex::Regex;
 
     #[test]
     fn counts_unique_changed_lines_and_tracks_uncovered() {
@@ -98,11 +113,12 @@ mod tests {
         store.on_line("src/foo.rs", 1, 2);
         store.on_line("src/foo.rs", 2, 0);
 
-        let report = analyze_changed_coverage(&changed_files, &store, true).expect("report");
+        let report = analyze_changed_coverage(&changed_files, &store, true, &[]).expect("report");
 
         assert_eq!(report.total_changed, 2);
         assert_eq!(report.total_covered, 1);
         assert_eq!(report.uncovered_files.len(), 1);
+        assert!(report.skipped_files.is_empty());
         let uncovered = &report.uncovered_files[0];
         assert_eq!(uncovered.path, "src/foo.rs");
         assert_eq!(uncovered.uncovered_lines, vec![2]);
@@ -116,11 +132,12 @@ mod tests {
         }];
 
         let store = CoverageStore::default();
-        let report = analyze_changed_coverage(&changed_files, &store, true).expect("report");
+        let report = analyze_changed_coverage(&changed_files, &store, true, &[]).expect("report");
 
         assert_eq!(report.total_changed, 2);
         assert_eq!(report.total_covered, 0);
         assert_eq!(report.uncovered_files.len(), 1);
+        assert!(report.skipped_files.is_empty());
         let uncovered = &report.uncovered_files[0];
         assert_eq!(uncovered.path, "src/foo.rs");
         assert_eq!(uncovered.uncovered_lines, vec![1, 2]);
@@ -134,10 +151,40 @@ mod tests {
         }];
 
         let store = CoverageStore::default();
-        let report = analyze_changed_coverage(&changed_files, &store, false).expect("report");
+        let report = analyze_changed_coverage(&changed_files, &store, false, &[]).expect("report");
 
         assert_eq!(report.total_changed, 0);
         assert_eq!(report.total_covered, 0);
         assert!(report.uncovered_files.is_empty());
+        assert!(report.skipped_files.is_empty());
+    }
+
+    #[test]
+    fn skips_files_matching_patterns() {
+        let changed_files = vec![
+            ChangedFile {
+                path: "pkg/mongodb/client.go".to_string(),
+                changed_lines: vec![1, 2],
+            },
+            ChangedFile {
+                path: "src/main.go".to_string(),
+                changed_lines: vec![10],
+            },
+        ];
+
+        let mut store = CoverageStore::default();
+        store.on_line("src/main.go", 10, 1);
+
+        let patterns = [Regex::new(r"^pkg/mongodb").expect("regex")];
+        let report = analyze_changed_coverage(&changed_files, &store, true, &patterns)
+            .expect("report");
+
+        assert_eq!(report.total_changed, 1);
+        assert_eq!(report.total_covered, 1);
+        assert!(report.uncovered_files.is_empty());
+        assert_eq!(report.skipped_files.len(), 1);
+        let skipped = &report.skipped_files[0];
+        assert_eq!(skipped.path, "pkg/mongodb/client.go");
+        assert_eq!(skipped.pattern, r"^pkg/mongodb");
     }
 }

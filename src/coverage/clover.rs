@@ -214,7 +214,7 @@ mod tests {
             .parse(cov_file, &mut store)
             .expect("parse clover");
 
-        let report = crate::coverage::analyze_changed_coverage(&changed, &store, true);
+        let report = crate::coverage::analyze_changed_coverage(&changed, &store, true, &[]);
         let report = report.expect("report");
         let calc = report
             .uncovered_files

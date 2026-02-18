@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use std::sync::OnceLock;
 
 use clap::{CommandFactory, FromArgMatches, Parser, ValueEnum, ValueHint};
+use regex::Regex;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, ValueEnum)]
 #[value(rename_all = "kebab_case")]
@@ -101,6 +102,14 @@ pub struct CliOptions {
         help = "How to handle files missing from coverage: uncovered or ignore"
     )]
     pub missing_coverage: MissingCoverageMode,
+    #[arg(
+        long = "skip-coverage-path",
+        value_name = "REGEX",
+        help = "Regex of file paths to exclude from uncovered line calculations; repeatable or comma-separated",
+        action = clap::ArgAction::Append,
+        value_delimiter = ','
+    )]
+    pub skip_coverage_paths: Vec<Regex>,
     #[arg(
         long = "output",
         id = "output",
@@ -325,5 +334,33 @@ mod tests {
         ])
         .expect("parse");
         assert_eq!(options.missing_coverage, MissingCoverageMode::Ignore);
+    }
+
+    #[test]
+    fn parses_skip_coverage_paths() {
+        let options = parse_args([
+            OsString::from("bin"),
+            OsString::from("--skip-coverage-path"),
+            OsString::from("^pkg/mongodb"),
+            OsString::from("--skip-coverage-path"),
+            OsString::from("vendor/.*"),
+        ])
+        .expect("parse");
+        assert_eq!(options.skip_coverage_paths.len(), 2);
+        assert_eq!(options.skip_coverage_paths[0].as_str(), "^pkg/mongodb");
+        assert_eq!(options.skip_coverage_paths[1].as_str(), "vendor/.*");
+    }
+
+    #[test]
+    fn parses_skip_coverage_paths_comma_separated() {
+        let options = parse_args([
+            OsString::from("bin"),
+            OsString::from("--skip-coverage-path"),
+            OsString::from("^pkg/mongodb,vendor/.*"),
+        ])
+        .expect("parse");
+        assert_eq!(options.skip_coverage_paths.len(), 2);
+        assert_eq!(options.skip_coverage_paths[0].as_str(), "^pkg/mongodb");
+        assert_eq!(options.skip_coverage_paths[1].as_str(), "vendor/.*");
     }
 }

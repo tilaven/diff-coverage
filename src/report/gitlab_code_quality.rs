@@ -86,6 +86,7 @@ mod tests {
                 covered_lines: 0,
                 changed_lines: 2,
             }],
+            skipped_files: Vec::new(),
         };
 
         let mut out = Vec::new();

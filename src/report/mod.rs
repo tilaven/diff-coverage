@@ -15,6 +15,7 @@ pub struct CoverageReport {
     pub total_changed: usize,
     pub total_covered: usize,
     pub uncovered_files: Vec<UncoveredFile>,
+    pub skipped_files: Vec<SkippedFile>,
 }
 
 #[derive(Debug)]
@@ -23,6 +24,12 @@ pub struct UncoveredFile {
     pub uncovered_lines: Vec<u32>,
     pub covered_lines: usize,
     pub changed_lines: usize,
+}
+
+#[derive(Debug)]
+pub struct SkippedFile {
+    pub path: String,
+    pub pattern: String,
 }
 
 impl CoverageReport {
