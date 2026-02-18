@@ -53,7 +53,8 @@ pub fn render_to<W: Write + ?Sized>(
 
     if !report.skipped_files.is_empty() {
         writeln!(out)?;
-        let header = "Skipped paths from uncovered line calculation (matched --skip-coverage-path):";
+        let header =
+            "Skipped paths from uncovered line calculation (matched --skip-coverage-path):";
         if use_color {
             writeln!(out, "{}", header.yellow().bold())?;
         } else {

@@ -176,8 +176,8 @@ mod tests {
         store.on_line("src/main.go", 10, 1);
 
         let patterns = [Regex::new(r"^pkg/mongodb").expect("regex")];
-        let report = analyze_changed_coverage(&changed_files, &store, true, &patterns)
-            .expect("report");
+        let report =
+            analyze_changed_coverage(&changed_files, &store, true, &patterns).expect("report");
 
         assert_eq!(report.total_changed, 1);
         assert_eq!(report.total_covered, 1);

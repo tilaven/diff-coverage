@@ -27,11 +27,7 @@ pub fn render_to<W: Write + ?Sized>(
             "Skipped paths from uncovered line calculation (matched --skip-coverage-path):"
         )?;
         for skipped in &report.skipped_files {
-            writeln!(
-                out,
-                "- {} (matched {})",
-                skipped.path, skipped.pattern
-            )?;
+            writeln!(out, "- {} (matched {})", skipped.path, skipped.pattern)?;
         }
     }
 
