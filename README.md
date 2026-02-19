@@ -26,14 +26,15 @@ diff-coverage coverage.xml --diff-file diff.diff --output json=diff-cover.json -
 diff-coverage coverage.xml --diff-file diff.diff --skip-coverage-path '^pkg/mongodb'
 ```
 
-Options
-- --diff-file <PATH>: diff to analyze
-- --fail-under <PERCENT>: minimum acceptable diff coverage
-- --missing-coverage <MODE>: how to handle files missing from coverage (uncovered or ignore, default: ignore)
-- --skip-coverage-path <REGEX>: regex of file paths to skip from uncovered line calculations (repeatable or comma-separated)
-- --output <FORMAT=PATH>: output target(s), repeatable or comma‑separated Formats: cli, summary, gitlab, json (note: cli and summary don’t take a path)
-- -h, --help: show help
-- -V, --version: show version
+## Options
+
+- <a id="diff-file"></a>`--diff-file <PATH>`: diff to analyze
+- <a id="fail-under"></a>`--fail-under <PERCENT>`: minimum acceptable diff coverage
+- <a id="missing-coverage"></a>`--missing-coverage <MODE>`: how to handle files missing from coverage (uncovered or ignore, default: ignore)
+- <a id="skip-coverage-path"></a>`--skip-coverage-path <REGEX>`: regex of file paths to skip from uncovered line calculations (repeatable or comma-separated)
+- <a id="output"></a>`--output <FORMAT=PATH>`: output target(s), repeatable or comma‑separated Formats: cli, summary, gitlab, json (note: cli and summary don’t take a path)
+- <a id="help"></a>`-h, --help`: show help
+- <a id="version"></a>`-V, --version`: show version
 
 ## Performance highlights
 
